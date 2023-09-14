@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik'
 import axios from 'axios';
 import { processEmailSchema } from '../schemas';
+import ErrorAlert from './ErrorAlert';
+import SuccessAlert from './SuccessAlert';
 import './dashboard.css'
 const initialValues = {
     pluginName: '',
@@ -24,6 +26,7 @@ const Dashboard = () => {
 
     // const [showInput, setInput] = useState(false);
     const [successMessage, setSuccessMessage] = useState();
+    const [errorMessage, setErrorMessage] = useState();
     const csvRef = useRef();
 
     const { values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
@@ -57,7 +60,7 @@ const Dashboard = () => {
             } catch (error) {
                 console.log('error == ', error);
                 if (error) {
-                    setSuccessMessage('Something went wrong!')
+                    setErrorMessage('Something went wrong!')
                 }
             }
         }
@@ -85,16 +88,13 @@ const Dashboard = () => {
         <div>
             <div className='container'>
                 {
-                    successMessage &&
-                    <div id="alert-border-3" className="flex items-center p-4 mb-4 text-green-800 border-t-4 border-green-300 bg-green-50" role="alert">
-                    <svg className="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                    </svg>
-                    <div className="ml-3 text-sm font-medium">
-                        {successMessage}
-                    </div>
-                </div>
+                    successMessage && <SuccessAlert successMessage={successMessage}/>
                 }
+
+                {
+                    errorMessage && <ErrorAlert errorMessage={errorMessage} />
+                }
+
                 <form id='processEmailForm' onSubmit={handleSubmit} className='flex justify-between'>
                     <section className='first_col bg-white'>
                         <h2 className="cmn_head text-xl md:text-2xl text-black font-bold mb-2.5">Settings</h2>
