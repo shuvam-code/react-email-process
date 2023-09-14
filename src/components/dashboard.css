@@ -1,0 +1,92 @@
+body{
+    background-color: #f0f1fa;
+    margin: 25px;
+}
+.container{
+    max-width: 1280px;
+    margin: auto;
+}
+.clearfix{
+    clear: both;
+}
+.cmn_box{
+    width: 100%;
+    background-color: #ffffe2;
+    border: 2px solid #ccc;
+    height: auto;
+}
+/* .error_txt{
+    display: block;
+    color: red;
+} */
+input{
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+}
+input::placeholder{
+    font-size: 14px;
+}
+select{
+    width: 100%;
+    max-width: 315px;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    padding: 5px;
+}
+input:focus,
+select:focus,
+.cmn_box:focus{
+    outline: none;
+}
+/* Columns */
+.first_col,
+.second_col{
+    width: 48%;
+    padding: 40px;
+}
+.second_col .cmn_head{
+    margin-top: 35px;
+}
+.time_box li{
+    width: 48%;
+    float: left;
+    margin-bottom: 15px;
+}
+.time_box li+li{
+    margin-left: 10px;
+}
+.submit_btn{
+    font-size: 18px;
+    color: #fff;
+    background-color: #6fe239;
+    padding: 10px 25px;
+    margin-top: 30px;
+    transition: all 0.3s ease-in-out;
+}
+.submit_btn:hover{
+    background-color: #36aa00;
+}
+/* Media Query */
+@media screen and (max-width:991px) {
+    #processEmailForm{
+        display: block;
+    }
+    .first_col,
+    .second_col{
+        width: 100%;
+        padding: 15px;
+    }
+    .first_col{
+        margin-bottom: 30px;
+    }
+}
+@media screen and (max-width:600px){
+    .time_box li{
+        width: 100%;
+    }
+    .time_box li+li{
+        margin-left: 0;
+    }
+}
