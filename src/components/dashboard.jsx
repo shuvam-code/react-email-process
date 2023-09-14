@@ -27,14 +27,19 @@ const Dashboard = () => {
     // const [showInput, setInput] = useState(false);
     const [successMessage, setSuccessMessage] = useState();
     const [errorMessage, setErrorMessage] = useState();
+    const [submitBtnText, setSubmitBtnText] = useState('Process');
     const csvRef = useRef();
 
-    const { values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
+    const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
         initialValues: initialValues,
         validationSchema: processEmailSchema,
         onSubmit: async (values, action) => {
-            console.log(values.csvFile);
-            console.log(values);
+            // console.log(values.csvFile);
+            // console.log(values);
+            setSubmitBtnText('Processing..');
+            setSuccessMessage(false);
+            setErrorMessage(false);
+
             const formData = new FormData();
             formData.append('csvFile', values.csvFile);
             formData.append('pluginName', values.pluginName);
@@ -48,7 +53,7 @@ const Dashboard = () => {
             formData.append('startMins', values.startMins);
             formData.append('endHour', values.endHour);
             formData.append('endMins', values.endMins);
-            console.log('formData == ', formData);
+            // console.log('formData == ', formData);
             try {
                 const resp = await axios.post(`${import.meta.env.VITE_API}/addcustomer`, formData);
                 console.log('Response == ', resp.data);
@@ -63,6 +68,8 @@ const Dashboard = () => {
                     setErrorMessage('Something went wrong!')
                 }
             }
+            action.setSubmitting(false);
+            setSubmitBtnText('Process');
         }
     });
 
@@ -212,7 +219,7 @@ const Dashboard = () => {
                             errors.csvFile && touched.csvFile &&
                             <span className="block text-red-500">{errors.csvFile}</span>
                         }
-                        <button type='submit' className='submit_btn block ml-auto rounded-3xl'>Process</button>
+                        <button type='submit' disabled={isSubmitting} className='submit_btn block ml-auto rounded-3xl'>{submitBtnText}</button>
                     </section>
                 </form>
             </div>
