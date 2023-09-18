@@ -5,6 +5,7 @@ import { processEmailSchema } from '../../schemas';
 import ErrorAlert from '../Alert/ErrorAlert';
 import SuccessAlert from '../Alert/SuccessAlert';
 import './CreateJob.css';
+// import ExampleCSV from '../../assets/example.csv';
 const initialValues = {
     pluginName: '',
     campaignId: '',
@@ -34,7 +35,7 @@ const CreateJob = () => {
         validationSchema: processEmailSchema,
         onSubmit: async (values, action) => {
             // console.log(values.csvFile);
-            // console.log(values);
+            // console.log(values.pluginName);
             setSubmitBtnText('Processing..');
             setSuccessMessage(false);
             setErrorMessage(false);
@@ -54,15 +55,20 @@ const CreateJob = () => {
             formData.append('endMins', values.endMins);
             // console.log('formData == ', formData);
             try {
-                const resp = await axios.post(`${import.meta.env.VITE_API}/addcustomer`, formData);
-                console.log('Response == ', resp.data);
+                const token = localStorage.getItem('token');
+                const resp = await axios.post(`${import.meta.env.VITE_API}/addcustomer`,formData,{
+                    headers:{
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                // console.log('Response == ', resp.data);
                 if (resp.data) {
                     setSuccessMessage(resp.data.message)
                     action.resetForm();
                     csvRef.current.value = null;
                 }
             } catch (error) {
-                console.log('error == ', error);
+                // console.log('error == ', error);
                 if (error) {
                     setErrorMessage('Something went wrong!')
                 }
@@ -104,13 +110,20 @@ const CreateJob = () => {
                 <form id='processEmailForm' onSubmit={handleSubmit} className='flex justify-between'>
                     <section className='first_col bg-white'>
                         <h2 className="cmn_head text-xl md:text-2xl text-black font-bold mb-2.5">Settings</h2>
-                        <input type='text' name='pluginName' placeholder='Plugin Name' value={values.pluginName} onChange={handleChange} onBlur={handleBlur} />
+                        <label>Select Platform</label>
+                        <br />
+                        {/* <input type='text' name='pluginName' placeholder='Plugin Name' value={values.pluginName} onChange={handleChange} onBlur={handleBlur} /> */}
+                        <select name="pluginName" onBlur={handleBlur} onChange={handleChange} style={{width:'100%'}}>
+                            <option defaultValue={''} value=''>Select Platform</option>
+                            <option value="Revenue Media">Revenue Media</option>
+                        </select>
                         <br />
                         {
                             errors.pluginName && touched.pluginName &&
                             <span className="block text-red-500">{errors.pluginName}</span>
                         }
                         <br />
+                        <label>Campaign ID</label>
                         <input type='number' name='campaignId' placeholder='Campaign ID' value={values.campaignId} onChange={handleChange} onBlur={handleBlur} />
                         <br />
                         {
@@ -118,6 +131,7 @@ const CreateJob = () => {
                             <span className="block text-red-500">{errors.campaignId}</span>
                         }
                         <br />
+                        <label>Affiliate ID</label>
                         <input type='number' name='affId' placeholder='Affiliate ID' value={values.affId} onChange={handleChange} onBlur={handleBlur} />
                         <br />
                         {
@@ -125,6 +139,7 @@ const CreateJob = () => {
                             <span className="block text-red-500">{errors.affId}</span>
                         }
                         <br />
+                        <label>Product ID</label>
                         <input type='number' name='product1_id' placeholder='Product ID' value={values.product1_id} onChange={handleChange} onBlur={handleBlur} />
                         <br />
                         {
@@ -132,7 +147,7 @@ const CreateJob = () => {
                             <span className="block text-red-500">{errors.product1_id}</span>
                         }
                         <br />
-
+                        <label>Product Quantity</label>
                         <input type='number' name='product1_qty' placeholder='Product Quantity' value={values.product1_qty} onChange={handleChange} onBlur={handleBlur} />
                         <br />
                         {
@@ -140,7 +155,7 @@ const CreateJob = () => {
                             <span className="block text-red-500">{errors.product1_qty}</span>
                         }
                         <br />
-
+                        <label>Sales URL</label>
                         <input type='test' name='salesUrl' placeholder='Sales URL' value={values.salesUrl} onChange={handleChange} onBlur={handleBlur} />
                         <br />
                         {
@@ -148,7 +163,7 @@ const CreateJob = () => {
                             <span className="block text-red-500">{errors.salesUrl}</span>
                         }
                         <br />
-
+                        <label>Max Per Day</label>
                         <input type='number' name='maxPerDay' placeholder='Max Per Day' value={values.maxPerDay} onChange={handleChange} onBlur={handleBlur} />
                         <br />
                         {
@@ -157,28 +172,36 @@ const CreateJob = () => {
                         }
                         <br />
                         <ul className='time_box'>
-                            <li><input type='datetime-local' name='startHour' placeholder='Start Hours' value={values.startHour} onChange={handleChange} onBlur={handleBlur} />
+                            <li>
+                                <label>Start Hours</label>
+                                <input type='datetime-local' name='startHour' placeholder='Start Hours' value={values.startHour} onChange={handleChange} onBlur={handleBlur} />
                                 {
                                     errors.startHour && touched.startHour &&
                                     <span className="block text-red-500">{errors.startHour}</span>
                                 }
                             </li>
 
-                            <li><input type='datetime-local' name='startMins' placeholder='Start Minutes' value={values.startMins} onChange={handleChange} onBlur={handleBlur} />
+                            <li>
+                                <label>Start Minutes</label>
+                                <input type='datetime-local' name='startMins' placeholder='Start Minutes' value={values.startMins} onChange={handleChange} onBlur={handleBlur} />
                                 {
                                     errors.startMins && touched.startMins &&
                                     <span className="block text-red-500">{errors.startMins}</span>
                                 }
                             </li>
 
-                            <li className=''><input type='datetime-local' name='endHour' placeholder='End Hours' value={values.endHour} onChange={handleChange} onBlur={handleBlur} />
+                            <li>
+                                <label>End Hours</label>
+                                <input type='datetime-local' name='endHour' placeholder='End Hours' value={values.endHour} onChange={handleChange} onBlur={handleBlur} />
                                 {
                                     errors.endHour && touched.endHour &&
                                     <span className="block text-red-500">{errors.endHour}</span>
                                 }
                             </li>
 
-                            <li><input type='datetime-local' name='endMins' placeholder='End Minutes' value={values.endMins} onChange={handleChange} onBlur={handleBlur} />
+                            <li>
+                                <label>End Minutes</label>
+                                <input type='datetime-local' name='endMins' placeholder='End Minutes' value={values.endMins} onChange={handleChange} onBlur={handleBlur} />
                                 {
                                     errors.endMins && touched.endMins &&
                                     <span className="block text-red-500">{errors.endMins}</span>
@@ -189,30 +212,33 @@ const CreateJob = () => {
                         <div className='clearfix'></div>
                     </section>
                     <section className='second_col bg-white'>
-                        {/* <select onChange={(e) => {
-                          handleChange(e);
-                          selectChangeHandler(e);
-                      }} onBlur={handleBlur}>
-                          <option defaultValue={''} value=''>Select an option</option>
-                          <option value="email">Email</option>
-                          <option value="csv">CSV</option>
-                      </select>
-                      {
-                          errors.matched && touched.matched &&
-                          <span className="block text-red-500">{errors.matched}</span>
-                      } */}
+                        {/* <select name="matched" onChange={(e) => {
+                            handleChange(e);
+                            selectChangeHandler(e);
+                        }} onBlur={handleBlur}>
+                            <option defaultValue={''} value=''>Select an option</option>
+                            <option value="email">Email</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                        {
+                            errors.matched && touched.matched &&
+                            <span className="block text-red-500">{errors.matched}</span>
+                        } */}
                         <h2 className="cmn_head text-xl md:text-2xl text-black font-bold mb-2.5">E-mails for reprocessing</h2>
-                        {/* {
-                          showInput && showInput == 'email' &&
-                          <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
-                          </textarea>
-                      } */}
+                        {
+                            // showInput && showInput == 'email' &&
+                            // <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
+                            // </textarea>
+                        }
 
                         {
                             // showInput && showInput == 'csv' &&
-                            <input ref={csvRef} type="file" accept='.csv' name="csvFile" onChange={(event) => {
-                                setFieldValue("csvFile", event.currentTarget.files[0]);
-                            }} onBlur={handleBlur} />
+                            <>
+                                <input ref={csvRef} type="file" accept='.csv' name="csvFile" onChange={(event) => {
+                                    setFieldValue("csvFile", event.currentTarget.files[0]);
+                                }} onBlur={handleBlur} />
+                                <a className="example-csv" href='../../assets/example.csv' target="_blank">example.csv</a>
+                            </>
                         }
                         {
                             errors.csvFile && touched.csvFile &&

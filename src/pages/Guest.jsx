@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'
-
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Guest = ({ Component }) => {
     const navigate = useNavigate();
+    let location = useLocation();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -11,7 +11,7 @@ const Guest = ({ Component }) => {
         if (token) {
             navigate('/');
         }
-    })
+    },[navigate,location])
 
     return (
         <Component />
