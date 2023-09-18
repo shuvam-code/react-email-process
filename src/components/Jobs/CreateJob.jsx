@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik'
 import axios from 'axios';
-import { processEmailSchema } from '../schemas';
-import ErrorAlert from './ErrorAlert';
-import SuccessAlert from './SuccessAlert';
-import './dashboard.css'
+import { processEmailSchema } from '../../schemas';
+import ErrorAlert from '../Alert/ErrorAlert';
+import SuccessAlert from '../Alert/SuccessAlert';
+import './CreateJob.css';
 const initialValues = {
     pluginName: '',
     campaignId: '',
@@ -22,8 +22,7 @@ const initialValues = {
     // emails_list: '',
 }
 
-const Dashboard = () => {
-
+const CreateJob = () => {
     // const [showInput, setInput] = useState(false);
     const [successMessage, setSuccessMessage] = useState();
     const [errorMessage, setErrorMessage] = useState();
@@ -95,7 +94,7 @@ const Dashboard = () => {
         <div>
             <div className='container'>
                 {
-                    successMessage && <SuccessAlert successMessage={successMessage}/>
+                    successMessage && <SuccessAlert successMessage={successMessage} />
                 }
 
                 {
@@ -191,23 +190,23 @@ const Dashboard = () => {
                     </section>
                     <section className='second_col bg-white'>
                         {/* <select onChange={(e) => {
-                            handleChange(e);
-                            selectChangeHandler(e);
-                        }} onBlur={handleBlur}>
-                            <option defaultValue={''} value=''>Select an option</option>
-                            <option value="email">Email</option>
-                            <option value="csv">CSV</option>
-                        </select>
-                        {
-                            errors.matched && touched.matched &&
-                            <span className="block text-red-500">{errors.matched}</span>
-                        } */}
+                          handleChange(e);
+                          selectChangeHandler(e);
+                      }} onBlur={handleBlur}>
+                          <option defaultValue={''} value=''>Select an option</option>
+                          <option value="email">Email</option>
+                          <option value="csv">CSV</option>
+                      </select>
+                      {
+                          errors.matched && touched.matched &&
+                          <span className="block text-red-500">{errors.matched}</span>
+                      } */}
                         <h2 className="cmn_head text-xl md:text-2xl text-black font-bold mb-2.5">E-mails for reprocessing</h2>
                         {/* {
-                            showInput && showInput == 'email' &&
-                            <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
-                            </textarea>
-                        } */}
+                          showInput && showInput == 'email' &&
+                          <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
+                          </textarea>
+                      } */}
 
                         {
                             // showInput && showInput == 'csv' &&
@@ -227,4 +226,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard;
+export default CreateJob;
