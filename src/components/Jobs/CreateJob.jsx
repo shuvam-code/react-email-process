@@ -18,27 +18,61 @@ const initialValues = {
     startMins: '',
     endHour: '',
     endMins: '',
-    // matched: '',
+    matched: 'email',
     csvFile: '',
-    // emails_list: '',
+    emails_list: '',
 }
 
 const CreateJob = () => {
-    // const [showInput, setInput] = useState(false);
+    const [showInput, setInput] = useState('email');
     const [successMessage, setSuccessMessage] = useState();
     const [errorMessage, setErrorMessage] = useState();
     const [submitBtnText, setSubmitBtnText] = useState('Process');
     const csvRef = useRef();
 
-    const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
+    const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue, setFieldError, setErrors, setTouched, setSubmitting } = useFormik({
         initialValues: initialValues,
         validationSchema: processEmailSchema,
         onSubmit: async (values, action) => {
             // console.log(values.csvFile);
             // console.log(values.pluginName);
+            var is_email_value;
             setSubmitBtnText('Processing..');
             setSuccessMessage(false);
             setErrorMessage(false);
+
+            if(values.matched == 'email'){
+                is_email_value = 1;
+                if(!values.emails_list){
+                    // setFieldError("emails_list','Please enter email ID's",false);
+                    setErrors({
+                        emails_list:"Please enter email ID's",
+                    })
+                    setSubmitBtnText('Process');
+                    setSubmitting(false);
+                    return undefined;
+                    // setTouched({
+                    //     emails_list:true
+                    // })
+                }
+            }
+
+            if(values.matched == 'csv'){
+                is_email_value = 0;
+                if(!values.csvFile){
+                   
+                    // setFieldError("emails_list','Please enter email ID's",false);
+                    setErrors({
+                        csvFile:'Please choose a CSV file',
+                    })
+                    setSubmitBtnText('Process');
+                    setSubmitting(false);
+                    return undefined;
+                    // setTouched({
+                    //     emails_list:true
+                    // })
+                }
+            }
 
             const formData = new FormData();
             formData.append('csvFile', values.csvFile);
@@ -53,6 +87,8 @@ const CreateJob = () => {
             formData.append('startMins', values.startMins);
             formData.append('endHour', values.endHour);
             formData.append('endMins', values.endMins);
+            formData.append('emails', values.emails_list);
+            formData.append('is_email',is_email_value);
             // console.log('formData == ', formData);
             try {
                 const token = localStorage.getItem('token');
@@ -65,32 +101,44 @@ const CreateJob = () => {
                 if (resp.data) {
                     setSuccessMessage(resp.data.message)
                     action.resetForm();
-                    csvRef.current.value = null;
+                    if(!is_email_value){
+                        csvRef.current.value = null;
+                    }
+
+                    setInput('email');
+                    
+                    setTimeout(() => {
+                        setSuccessMessage(false)
+                    },4000)
                 }
             } catch (error) {
-                // console.log('error == ', error);
+                console.log('error == ', error.message);
                 if (error) {
                     setErrorMessage('Something went wrong!')
                 }
+                setTimeout(() => {
+                    setErrorMessage(false)
+                },4000)
             }
             action.setSubmitting(false);
             setSubmitBtnText('Process');
         }
     });
+    
 
-    // const selectChangeHandler = (e) => {
-    //     console.log('Change');
-    //     if (e.target.value) {
-    //         if (e.target.value == 'email') {
-    //             setInput('email')
-    //         }
-    //         if (e.target.value == 'csv') {
-    //             setInput('csv')
-    //         }
-    //     } else {
-    //         setInput(false)
-    //     }
-    // }
+    const selectChangeHandler = (e) => {
+        console.log('Change');
+        if (e.target.value) {
+            if (e.target.value == 'email') {
+                setInput('email')
+            }
+            if (e.target.value == 'csv') {
+                setInput('csv')
+            }
+        } else {
+            setInput(false)
+        }
+    }
 
     useEffect(() => {
 
@@ -212,27 +260,31 @@ const CreateJob = () => {
                         <div className='clearfix'></div>
                     </section>
                     <section className='second_col bg-white'>
-                        {/* <select name="matched" onChange={(e) => {
+                        <select value={values.matched} name="matched" onChange={(e) => {
                             handleChange(e);
                             selectChangeHandler(e);
                         }} onBlur={handleBlur}>
-                            <option defaultValue={''} value=''>Select an option</option>
+                            {/* <option defaultValue={''} value=''>Select an option</option> */}
                             <option value="email">Email</option>
                             <option value="csv">CSV</option>
                         </select>
                         {
                             errors.matched && touched.matched &&
                             <span className="block text-red-500">{errors.matched}</span>
-                        } */}
+                        }
                         <h2 className="cmn_head text-xl md:text-2xl text-black font-bold mb-2.5">E-mails for reprocessing</h2>
                         {
-                            // showInput && showInput == 'email' &&
-                            // <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
-                            // </textarea>
+                            showInput && showInput == 'email' &&
+                            <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
+                            </textarea>
+                        }
+                         {
+                            errors.emails_list &&
+                            <span className="block text-red-500">{errors.emails_list}</span>
                         }
 
                         {
-                            // showInput && showInput == 'csv' &&
+                            showInput && showInput == 'csv' &&
                             <>
                                 <input ref={csvRef} type="file" accept='.csv' name="csvFile" onChange={(event) => {
                                     setFieldValue("csvFile", event.currentTarget.files[0]);

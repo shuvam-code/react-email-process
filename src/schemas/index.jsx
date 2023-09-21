@@ -34,7 +34,7 @@ export const processEmailSchema = Yup.object({
     startMins: Yup.string().required('Start Minute is required'),
     endHour: Yup.string().required('End hour is required'),
     endMins: Yup.string().required('End Minute is required'),
-    // matched: Yup.string().required('Please select a option'),
+    matched: Yup.string().required('Please select a option'),
     // matched: Yup.lazy((value) => {
     //     console.log(value);
     //     if(value == 'csv'){
@@ -48,9 +48,13 @@ export const processEmailSchema = Yup.object({
     //     }
     //     return Yup.trim().string().required('Please select a option')
     // }),
-    // csvFile: Yup.mixed().when('matched', {
-    //     is: (matched) => !matched,
-    //     then: Yup.string().required("Please choose a CSV file")
+    // csvFile: Yup.string().when('matched',{
+    //     is: 'email',
+    //     then: Yup.string().required("Please choose a CSV file"),
+    //     otherwise:Yup.string()
     // }),
-    csvFile:Yup.string().required("Please choose a CSV file")
+    // csvFile:Yup.string().required("Please choose a CSV file")
+    emails_list:Yup.string(),
+    csvFile:Yup.string()
 });
+
