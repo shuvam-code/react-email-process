@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik'
 import axios from 'axios';
 import { processEmailSchema } from '../../schemas';
-import ErrorAlert from '../Alert/ErrorAlert';
-import SuccessAlert from '../Alert/SuccessAlert';
+// import ErrorAlert from '../Alert/ErrorAlert';
+// import SuccessAlert from '../Alert/SuccessAlert';
 import './CreateJob.css';
+import { toast } from 'react-toastify';
 // import ExampleCSV from '../../assets/example.csv';
 const initialValues = {
     pluginName: '',
@@ -25,28 +26,37 @@ const initialValues = {
 
 const CreateJob = () => {
     const [showInput, setInput] = useState('email');
-    const [successMessage, setSuccessMessage] = useState();
-    const [errorMessage, setErrorMessage] = useState();
+    // const [successMessage, setSuccessMessage] = useState();
+    // const [errorMessage, setErrorMessage] = useState();
     const [submitBtnText, setSubmitBtnText] = useState('Process');
     const csvRef = useRef();
+
+    const [toastID, setToastID] = useState(Math.random());
 
     const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue, setFieldError, setErrors, setTouched, setSubmitting } = useFormik({
         initialValues: initialValues,
         validationSchema: processEmailSchema,
-        onSubmit: async (values, action) => {
+        onSubmit:async (values, action) => {
+           
+            setToastID((previousID => {
+                if(toast.isActive(previousID)){
+                    toast.dismiss(previousID);
+                }
+                return Math.random();
+            }));
             // console.log(values.csvFile);
             // console.log(values.pluginName);
             var is_email_value;
             setSubmitBtnText('Processing..');
-            setSuccessMessage(false);
-            setErrorMessage(false);
+            // setSuccessMessage(false);
+            // setErrorMessage(false);
 
-            if(values.matched == 'email'){
+            if (values.matched == 'email') {
                 is_email_value = 1;
-                if(!values.emails_list){
+                if (!values.emails_list) {
                     // setFieldError("emails_list','Please enter email ID's",false);
                     setErrors({
-                        emails_list:"Please enter email ID's",
+                        emails_list: "Please enter email ID's",
                     })
                     setSubmitBtnText('Process');
                     setSubmitting(false);
@@ -57,13 +67,13 @@ const CreateJob = () => {
                 }
             }
 
-            if(values.matched == 'csv'){
+            if (values.matched == 'csv') {
                 is_email_value = 0;
-                if(!values.csvFile){
-                   
+                if (!values.csvFile) {
+
                     // setFieldError("emails_list','Please enter email ID's",false);
                     setErrors({
-                        csvFile:'Please choose a CSV file',
+                        csvFile: 'Please choose a CSV file',
                     })
                     setSubmitBtnText('Process');
                     setSubmitting(false);
@@ -88,43 +98,59 @@ const CreateJob = () => {
             formData.append('endHour', values.endHour);
             formData.append('endMins', values.endMins);
             formData.append('emails', values.emails_list);
-            formData.append('is_email',is_email_value);
+            formData.append('is_email', is_email_value);
             // console.log('formData == ', formData);
             try {
+
                 const token = localStorage.getItem('token');
-                const resp = await axios.post(`${import.meta.env.VITE_API}/addcustomer`,formData,{
+                const promise = axios.post(`${import.meta.env.VITE_API}/addcustomer`,formData,{
                     headers:{
                         'Authorization': `Bearer ${token}`
                     }
                 });
+
+                const resp = await toast.promise(promise,
+                    {
+                        pending:'Saving data...',
+                        success:{ render: 'Customer added successfully', delay: 100 },
+                        error:'Something went wrong!',
+                    },{
+                        position: "top-center",
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        theme: "light",
+                        toastId: toastID
+                    }
+                )
                 // console.log('Response == ', resp.data);
                 if (resp.data) {
-                    setSuccessMessage(resp.data.message)
+                    // setSuccessMessage(resp.data.message)
                     action.resetForm();
                     if(!is_email_value){
                         csvRef.current.value = null;
                     }
 
                     setInput('email');
-                    
-                    setTimeout(() => {
-                        setSuccessMessage(false)
-                    },4000)
+
+                    // setTimeout(() => {
+                    //     setSuccessMessage(false)
+                    // },4000)
                 }
             } catch (error) {
                 console.log('error == ', error.message);
-                if (error) {
-                    setErrorMessage('Something went wrong!')
-                }
-                setTimeout(() => {
-                    setErrorMessage(false)
-                },4000)
+                // if (error) {
+                //     setErrorMessage('Something went wrong!')
+                // }
+                // setTimeout(() => {
+                //     setErrorMessage(false)
+                // }, 4000)
             }
             action.setSubmitting(false);
             setSubmitBtnText('Process');
         }
     });
-    
+
 
     const selectChangeHandler = (e) => {
         console.log('Change');
@@ -147,13 +173,13 @@ const CreateJob = () => {
     return (
         <div>
             <div className='container px-4'>
-                {
+                {/* {
                     successMessage && <SuccessAlert successMessage={successMessage} />
                 }
 
                 {
                     errorMessage && <ErrorAlert errorMessage={errorMessage} />
-                }
+                } */}
 
                 <form id='processEmailForm' onSubmit={handleSubmit} className='flex justify-between'>
                     <section className='first_col bg-white'>
@@ -161,7 +187,7 @@ const CreateJob = () => {
                         <label>Select Platform</label>
                         <br />
                         {/* <input type='text' name='pluginName' placeholder='Plugin Name' value={values.pluginName} onChange={handleChange} onBlur={handleBlur} /> */}
-                        <select name="pluginName" onBlur={handleBlur} onChange={handleChange} style={{width:'100%'}}>
+                        <select name="pluginName" onBlur={handleBlur} onChange={handleChange} style={{ width: '100%' }}>
                             <option defaultValue={''} value=''>Select Platform</option>
                             <option value="Revenue Media">Revenue Media</option>
                         </select>
@@ -278,7 +304,7 @@ const CreateJob = () => {
                             <textarea className='cmn_box' cols="30" rows="10" value={values.emails_list} name='emails_list' onChange={handleChange} onBlur={handleBlur}>
                             </textarea>
                         }
-                         {
+                        {
                             errors.emails_list &&
                             <span className="block text-red-500">{errors.emails_list}</span>
                         }
