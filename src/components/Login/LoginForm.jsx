@@ -5,6 +5,7 @@ import { LoginSchema } from '../../schemas/LoginSchema';
 import ErrorAlert from '../Alert/ErrorAlert';
 import SuccessAlert from '../Alert/SuccessAlert';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const initialValues = {
     email: '',
@@ -15,6 +16,8 @@ const LoginForm = () => {
     const [successMessage, setSuccessMessage] = useState();
     const [errorMessage, setErrorMessage] = useState();
     const [submitBtnText, setSubmitBtnText] = useState('Login');
+
+    const toastId = 'toastId-1';
 
     const navigate = useNavigate();
 
@@ -32,15 +35,34 @@ const LoginForm = () => {
                 const resp = await axios.post(`${import.meta.env.VITE_API}/login`, formData);
                 // console.log('Response == ', resp.data);
                 if (resp.data.success) {
-                    localStorage.setItem('token',resp.data.token);
-                    setSuccessMessage('Logged in successfully');
+                    localStorage.setItem('token', resp.data.token);
+                    // setSuccessMessage('Logged in successfully');
+                    toast.dismiss(toastId);
                     action.resetForm();
-                    navigate('/');
+                    navigate('/',{state:{
+                        showToast:true,
+                        toastMessage:'Logged in successfully',
+                        toastType:'success'
+                    }});
                 }
             } catch (error) {
                 // console.log('error == ', error);
                 if (error) {
-                    setErrorMessage('Login credentials are invalid!')
+                    // setErrorMessage('Login credentials are invalid!')
+
+                    toast.error('Login credentials are invalid!', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        toastId: toastId
+                    });
+
+
                 }
             }
             action.setSubmitting(false);
@@ -55,7 +77,7 @@ const LoginForm = () => {
 
                 <div className="container px-5 py-6 mx-auto flex">
 
-                    <div className="lg:w-1/3 md:w-1/2 bg-white rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0 relative z-10 shadow-md">
+                    <div className="lg:w-1/3 md:w-1/2 bg-white rounded-lg p-8 flex flex-col md:mx-auto w-full mt-10 md:mt-0 relative z-0 shadow-md">
                         {
                             successMessage && <SuccessAlert successMessage={successMessage} />
                         }

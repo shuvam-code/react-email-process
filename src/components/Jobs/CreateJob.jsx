@@ -146,7 +146,7 @@ const CreateJob = () => {
 
     return (
         <div>
-            <div className='container'>
+            <div className='container px-4'>
                 {
                     successMessage && <SuccessAlert successMessage={successMessage} />
                 }

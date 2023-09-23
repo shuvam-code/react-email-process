@@ -1,19 +1,71 @@
 import React, { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import './Navbar.css';
+import { MoonLoader } from "react-spinners";
 
 const Navbar = () => {
     const nevigate = useNavigate();
     let [loginStatus, setLoginStatus] = useState();
     let location = useLocation();
+    let [loading, setLoading] = useState(true);
+
+
+    // check for notification
+    const toastId2 = 'toastId-2';
+    const toastId3 = 'toastId-3';
+    // console.log(location.state);
+
+
+
     useEffect(() => {
+        setLoading(false);
+        console.log('Navigating', location.state);
         const token = localStorage.getItem('token');
         if (token) {
             setLoginStatus(true)
         } else {
             setLoginStatus(false)
         }
-    }, [setLoginStatus, location, nevigate]);
+
+        if (location.state && location.state.showToast) {
+            if (location.state.toastType == 'success') {
+                toast.success(location.state.toastMessage, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    toastId: toastId2
+                });
+            }
+
+            if (location.state.toastType == 'error') {
+                toast.error(location.state.toastMessage, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    toastId: toastId3
+                });
+            }
+
+            window.history.replaceState({}, document.title)
+        }
+
+        // setTimeout(() => {
+        //     setLoading(false)
+        // },500)
+
+    }, [nevigate, location, location.state]);
 
 
     const logoutHandler = async () => {
@@ -29,7 +81,14 @@ const Navbar = () => {
             // console.log('Response == ', resp.data);
             if (resp.data) {
                 localStorage.removeItem('token');
-                nevigate('/login');
+                toast.dismiss(toastId2);
+                nevigate('/login', {
+                    state: {
+                        showToast: true,
+                        toastMessage: 'Logout successfully',
+                        toastType: 'success'
+                    }
+                });
             }
         } catch (error) {
             // console.log('error == ', error);
@@ -43,6 +102,19 @@ const Navbar = () => {
 
     return (
         <React.Fragment>
+             {/* loading state */}
+             {
+                loading &&
+                <div className='loader_overlay'>
+                    <MoonLoader
+                        color={'#C86A83'}
+                        loading={loading}
+                        size={80}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                    />
+                </div>
+            }
             <header className="w-full text-gray-600 body-font bg-light shadow-md mb-3.5 bg-rose-100">
                 <div className="container mx-auto flex flex-wrap p-4 flex-col md:flex-row items-center">
                     <Link to={loginStatus ? '/' : '/login'} className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
@@ -71,6 +143,8 @@ const Navbar = () => {
 
                 </div>
             </header>
+            <ToastContainer />
+
         </React.Fragment>
     )
 }
