@@ -1,5 +1,6 @@
 header .container nav .active {
-    color: blue !important;
+    color: #d17777;
+    font-weight: 600;
 }
 
 .loader_overlay {
@@ -19,4 +20,11 @@ header .container nav .active {
     /* Specify a stack order in case you're using a different order for other elements */
     cursor: default;
     /* Add a pointer on hover */
+}
+
+img.logo {
+    display: inline-block!important;
+    max-width: 35px!important;
+    margin-top: -10px!important;
+    margin-right: -5px!important;
 }

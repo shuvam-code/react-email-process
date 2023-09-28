@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { ErrorMessage } from 'formik';
 import CsvModal from '../CsvModal/Csvmodal';
+import CustomTooltip from './CustomTooltip';
 
 const AllJobs = () => {
   const [rowData, setRowData] = useState();
@@ -16,15 +17,19 @@ const AllJobs = () => {
   // const gridRef = useRef();
 
   const [columnDefs, setColumnDefs] = useState([
-    { field: 'id', headerName:'ID' },
-    { field: 'pluginName' },
-    { field: 'campaignId',headerName:'Campaign ID' },
-    { field: 'affId', headerName:'Affiliate ID' },
-    { field: 'product1_id', headerName:'Product ID' },
-    { field: 'product1_qty', headerName:"Product Quantity" },
-    { field: 'salesUrl', headerName:'Sales URL' },
-    { field: 'total_csv_data',headerName:'Total Data' },
-    { field: 'sync_csv_data',headerName:'Sync Data' },
+    { field: 'id', headerName: 'ID' },
+    {
+      field: 'pluginName',
+      tooltipField: 'pluginName',
+      tooltipComponentParams: { color: '#ececec' },
+    },
+    { field: 'campaignId', headerName: 'Campaign ID' },
+    { field: 'affId', headerName: 'Affiliate ID' },
+    { field: 'product1_id', headerName: 'Product ID',tooltipField:'product1_id' },
+    { field: 'product1_qty', headerName: "Product Quantity" },
+    { field: 'salesUrl', headerName: 'Sales URL' },
+    { field: 'total_csv_data', headerName: 'Total Data' },
+    { field: 'sync_csv_data', headerName: 'Sync Data' },
     // { field: 'startMins' },
     // { field: 'endHour' },
     // { field: 'endMins' },
@@ -33,7 +38,9 @@ const AllJobs = () => {
   const defaultColDef = useMemo(() => (
     {
       sortable: true,
-      filter: true
+      filter: true,
+      resizable: true,
+      tooltipComponent: CustomTooltip,
     }
   ), []);
 
@@ -73,9 +80,9 @@ const AllJobs = () => {
   return (
     <>
       {
-        showModal && <CsvModal hideModal={setShowModal} csvData={csvData}/>
+        showModal && <CsvModal hideModal={setShowModal} csvData={csvData} />
       }
-      
+
       <div className="ag-theme-alpine px-4" style={{ width: '100%', height: 600 }}>
         <AgGridReact
           // ref={gridRef}
@@ -83,7 +90,9 @@ const AllJobs = () => {
           animateRows={true} rowSelection='single'
           onCellClicked={cellClickedListener}
           defaultColDef={defaultColDef}
-          pagination={true} />
+          pagination={true}
+          tooltipShowDelay={0}
+          tooltipHideDelay={2000} />
       </div>
     </>
   )
