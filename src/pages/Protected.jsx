@@ -11,7 +11,7 @@ const Protected = ({ Component }) => {
         if (!token) {
             navigate('/login',{
                 state: {
-                    showToast: true,
+                    showToast: false,
                     toastMessage: 'Unauthorized',
                     toastType: 'error'
                 }

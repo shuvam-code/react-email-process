@@ -83,7 +83,7 @@ const AllJobs = () => {
         showModal && <CsvModal hideModal={setShowModal} csvData={csvData} />
       }
 
-      <div className="ag-theme-alpine px-4" style={{ width: '100%', height: 600 }}>
+      <div className="ag-theme-alpine px-4 mb-2" style={{ width: '100%', height: 600 }}>
         <AgGridReact
           // ref={gridRef}
           rowData={rowData} columnDefs={columnDefs}
